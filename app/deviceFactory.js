@@ -145,7 +145,7 @@ class Device {
 
     // Extract encrypted package from message using device key (if available)
     const pack = encryptionService.decrypt(message, (this.device || {}).key)
-    //console.log('[UDP] Message received type %s: %s, %s', pack.t, message, pack)
+    //console.log('[UDP] Message received type %s: %s, %s', pack.t, message, JSON.stringify(pack, null, 4))
     // If package type is response to handshake
     if (pack.t === 'dev') {
       this._setDevice(pack.mac, pack.name || pack.mac, rinfo.address, rinfo.port)
@@ -175,7 +175,11 @@ class Device {
     // If package type is response, update device properties
     if (pack.t === 'res' && this.device.bound) {
       pack.opt.forEach((opt, i) => {
-        this.device.props[opt] = pack.val[i]
+        if ('val' in pack) {
+            this.device.props[opt] = pack.val[i]
+        } else {
+            this.device.props[opt] = pack.p[i]
+        }
       })
       this.options.onUpdate(this.device)
       return
