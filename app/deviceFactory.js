@@ -145,10 +145,10 @@ class Device {
 
     // Extract encrypted package from message using device key (if available)
     const pack = encryptionService.decrypt(message, (this.device || {}).key)
-
+    //console.log('[UDP] Message received type %s: %s, %s', pack.t, message, pack)
     // If package type is response to handshake
     if (pack.t === 'dev') {
-      this._setDevice(message.cid, pack.name, rinfo.address, rinfo.port)
+      this._setDevice(pack.mac, pack.name || pack.mac, rinfo.address, rinfo.port)
       this._sendBindRequest(this.device)
       return
     }
